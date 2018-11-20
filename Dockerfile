@@ -12,7 +12,7 @@ RUN apt-get update
 RUN apt-get -y install docker-ce
 RUN echo "jenkins ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-RUN apt install -y wget
+RUN apt install -y wget maven
 
 # GCloud & Kubectl
 ENV GCLOUD_REMOTE_DOWNLOAD="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-213.0.0-linux-x86_64.tar.gz"
