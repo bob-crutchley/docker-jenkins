@@ -1,0 +1,8 @@
+bash
+vim
+maven
+jenkins
+unzip
+wget
+curl
+python

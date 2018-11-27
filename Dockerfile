@@ -1,32 +1,24 @@
-FROM jenkins/jenkins:lts
+FROM alpine:latest
 
-# docker
-USER root
-RUN apt-get update 
-RUN apt-get -y install apt-transport-https ca-certificates curl gnupg2 software-properties-common 
-RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey 
-RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-   $(lsb_release -cs) \
-   stable" 
-RUN apt-get update 
-RUN apt-get -y install docker-ce
-RUN echo "jenkins ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-RUN apt install -y wget maven
+COPY packages.txt /tmp/packages.txt
+RUN apk add $(cat /tmp/packages.txt)
 
 # GCloud & Kubectl
-ENV GCLOUD_REMOTE_DOWNLOAD="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-213.0.0-linux-x86_64.tar.gz"
+ENV GCLOUD_REMOTE_DOWNLOAD="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-226.0.0-linux-x86_64.tar.gz"
 ENV GCLOUD_LOCAL_DOWNLOAD="/tmp/google-cloud-sdk.tar.gz"
+RUN mkdir -p /opt
 RUN wget "${GCLOUD_REMOTE_DOWNLOAD}" -O "${GCLOUD_LOCAL_DOWNLOAD}"
 RUN tar xzvf ${GCLOUD_LOCAL_DOWNLOAD} -C /opt
 RUN ln -s /opt/google-cloud-sdk/bin/gcloud /usr/bin/gcloud
 RUN gcloud components install -q kubectl
 RUN ln -s /opt/google-cloud-sdk/bin/kubectl /usr/bin/kubectl
 
+#COPY install-plugins.bash /usr/local/bin/install-plugins.bash
+#COPY jenkins-support /usr/local/bin/jenkins-support
+#RUN chmod +x /usr/local/bin/install-plugins.bash
 # plugins
-USER jenkins
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
-COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/init.groovy
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
-
+COPY init.groovy /root/.jenkins/init.groovy.d/init.groovy
+#COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+#RUN /usr/local/bin/install-plugins.bash < /usr/share/jenkins/ref/plugins.txt
+ENTRYPOINT ["java", "-Djenkins.install.runSetupWizard=false", "-jar", "/usr/share/webapps/jenkins/jenkins.war"]
