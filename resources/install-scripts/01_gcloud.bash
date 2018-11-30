@@ -1,6 +1,6 @@
 #!/bin/bash
 # gcloud sdk install script
-# required programs:
+# required alpine packages:
 # 	- wget
 VERSION="226.0.0"
 GCLOUD_REMOTE_DOWNLOAD="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${VERSION}-linux-x86_64.tar.gz"

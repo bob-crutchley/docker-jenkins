@@ -1,15 +1,18 @@
 FROM alpine:latest
+# load environment variables
+COPY ENV_VARS /etc/profile.d/ENV_VARS
 
-COPY packages.txt /tmp/packages.txt
-RUN apk add $(cat /tmp/packages.txt)
+# copy resource files
+COPY resources ${BUILD_RESOURCES}
 
-# install scripts
-COPY ./install-scripts /tmp/install-scripts
-RUN for script in $(ls /tmp/install-scripts); do /tmp/install-scripts/${script}; done
+# alpine packages
+RUN apk add $(cat ${BUILD_RESOURCES}/packages.txt)
 
-# plugins
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
-COPY init.groovy /root/.jenkins/init.groovy.d/init.groovy
-#COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-#RUN /usr/local/bin/install-plugins.bash < /usr/share/jenkins/ref/plugins.txt
-ENTRYPOINT ["java", "-Djenkins.install.runSetupWizard=false", "-jar", "/usr/share/webapps/jenkins/jenkins.war"]
+# run all install scripts
+RUN ${BUILD_RESOURCES}/install-scripts/00_install.bash
+
+# jenkins initialisation scripts
+COPY init.groovy.d ${JENKINS_HOME}/init.groovy.d
+
+ENTRYPOINT java -jar ${JENKINS_HOME}/jenkins.war
+

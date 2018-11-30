@@ -1,0 +1,3 @@
+export JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+export JENKINS_HOME="/home/jenkins"
+export BUILD_RESOURCES="/tmp/resources"
