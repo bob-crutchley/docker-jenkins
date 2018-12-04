@@ -16,5 +16,7 @@ RUN ${BUILD_RESOURCES}/install-scripts/00_install.bash
 # jenkins initialisation scripts
 COPY init.groovy.d ${JENKINS_HOME}/init.groovy.d
 
+USER jenkins
+
 ENTRYPOINT java ${JAVA_OPTS} -jar ${JENKINS_HOME}/jenkins.war
 

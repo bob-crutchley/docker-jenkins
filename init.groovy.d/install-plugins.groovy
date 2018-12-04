@@ -4,7 +4,7 @@ def logger = Logger.getLogger("")
 def installed = false
 def initialized = false
 
-def plugins = new File("${System.getenv("BUILD_RESOURCES")}/plugins.txt")
+def plugins = new File("${System.getenv("BUILD_RESOURCES")}/jenkins_plugins.txt")
 plugins = plugins.readLines().collect {
 	return it.trim()
 }
