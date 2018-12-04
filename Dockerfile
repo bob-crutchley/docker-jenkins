@@ -1,6 +1,9 @@
 FROM alpine:latest
 # load environment variables
-COPY ENV_VARS /etc/profile.d/ENV_VARS
+COPY ENV_VARS.sh /etc/profile.d/ENV_VARS.sh
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+ENV JENKINS_HOME="/home/jenkins"
+ENV BUILD_RESOURCES="/tmp/resources"
 
 # copy resource files
 COPY resources ${BUILD_RESOURCES}
@@ -14,5 +17,5 @@ RUN ${BUILD_RESOURCES}/install-scripts/00_install.bash
 # jenkins initialisation scripts
 COPY init.groovy.d ${JENKINS_HOME}/init.groovy.d
 
-ENTRYPOINT java -jar ${JENKINS_HOME}/jenkins.war
+ENTRYPOINT java ${JAVA_OPTS} -jar ${JENKINS_HOME}/jenkins.war
 
