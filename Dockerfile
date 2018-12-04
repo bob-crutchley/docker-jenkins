@@ -8,7 +8,7 @@ ENV BUILD_RESOURCES="/tmp/resources"
 COPY resources ${BUILD_RESOURCES}
 
 # alpine packages
-RUN apk add $(cat ${BUILD_RESOURCES}/packages.txt)
+RUN apk add $(cat ${BUILD_RESOURCES}/alpine_packages.txt)
 
 # run all install scripts
 RUN ${BUILD_RESOURCES}/install-scripts/00_install.bash
