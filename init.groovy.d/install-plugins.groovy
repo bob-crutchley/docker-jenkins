@@ -3,23 +3,26 @@ import java.util.logging.Logger
 def logger = Logger.getLogger("")
 def installed = false
 def initialized = false
-def pluginParameter="${JENKINS_PLUGINS}"
-def plugins = pluginParameter.split()
+
+def plugins = new File("${System.getenv("BUILD_RESOURCES")}/plugins.txt")
+plugins = plugins.readLines().collect {
+	return it.trim()
+}
 logger.info("" + plugins)
 def instance = Jenkins.getInstance()
 def pm = instance.getPluginManager()
 def uc = instance.getUpdateCenter()
-plugins.each { plugin ->
-  logger.info("Checking ${plugin}")
+plugins.each { 
+  logger.info("Checking ${it}")
   if (!pm.getPlugin(it)) {
-    logger.info("Looking UpdateCenter for ${plugin}")
+    logger.info("Looking UpdateCenter for ${it}")
     if (!initialized) {
       uc.updateAllSites()
       initialized = true
     }
-    def plugin = uc.getPlugin(plugin)
+    def plugin = uc.getPlugin(it)
     if (plugin) {
-      logger.info("Installing " + plugin)
+      logger.info("Installing ${plugin}")
     	def installFuture = plugin.deploy()
       while(!installFuture.isDone()) {
         logger.info("Waiting for plugin install: ${plugin}")
