@@ -12,3 +12,4 @@ unzip
 wget
 curl
 python
+sudo
